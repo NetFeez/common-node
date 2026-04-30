@@ -1,6 +1,6 @@
 {
   "name": "@netfeez/common-node",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "common logic for Node.js environments",
   "type": "module",
   "main": "build/common-node.js",

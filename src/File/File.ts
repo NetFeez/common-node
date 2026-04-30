@@ -212,9 +212,10 @@ export class File {
      * @returns A promise that resolves to an array of file paths that match the pattern or a single file path if the pattern is not a glob.
      */
     private static async resolveEntries(pattern: string, baseDir: string): Promise<string[]> {
-        return pattern.includes('*') 
+        const files = pattern.includes('*') 
             ? await this.find(pattern, baseDir) 
             : [Path.resolve(baseDir, pattern)];
+        return files.map(file => Path.join(baseDir, file));
     }
     /**
      * Calculates the destination path for a file based on a glob pattern, source path, and destination path. If the pattern includes wildcards, it computes the relative path from the base directory to the source file and appends it to the destination directory. If the pattern does not include wildcards, it checks if the destination is a directory (either by checking if it exists and is a directory or by checking if it lacks an extension) and constructs the final destination path accordingly. This method is essential for determining where to move or copy files based on their original location and the specified pattern, ensuring that the directory structure is maintained when using glob patterns.
