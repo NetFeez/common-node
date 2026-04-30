@@ -90,7 +90,7 @@ This allows you to wrap calls in your own logging infrastructure:
 
 ```ts
 import { Env } from '@netfeez/common-node';
-import { Logger } from 'vortez'; // Or your preferred logger
+import { Logger } from '@netfeez/vterm'; // Or your preferred logger
 
 try {
     await Env.load('.env');
