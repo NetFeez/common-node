@@ -6,7 +6,7 @@
 import FS from "fs";
 import PATH from "path";
 
-import File from './File.js';
+import File from './File/File.js';
 
 export class Env {
     /**
