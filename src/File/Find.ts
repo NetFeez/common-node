@@ -2,6 +2,7 @@ import { promises as FS } from 'fs';
 
 import Glob from "../Glob.js";
 import Path from "../Path.js";
+import Async from '../Async.js';
 
 export class Find {
     /**
@@ -34,7 +35,7 @@ export class Find {
     static async * findStream(pattern: string, options: Find.Options = {}): AsyncGenerator<string> {
         const cwd = options.cwd ?? Path.cwd;
         const regex = Glob.globToRegex(pattern);
-        const limiter = this.createLimiter(options.concurrency ?? 32);
+        const limiter = Async.currencyLimiter(options.concurrency ?? 32);
         for await (const fullPath of this.walk(cwd, limiter)) {
             const relative = Path.diff(cwd, fullPath).split(Path.sep).join('/');
             if (regex.test(relative)) yield options.absolute ? fullPath : relative;
@@ -46,7 +47,7 @@ export class Find {
      * @param limiter An optional concurrency limiter function to control the number of simultaneous file system operations.
      * @returns An asynchronous generator that yields the full paths of all files found in the directory and its subdirectories.
      */
-    public static async * walk(dir: string, limiter = this.createLimiter(32)): AsyncGenerator<string> {
+    public static async * walk(dir: string, limiter = Async.currencyLimiter(32)): AsyncGenerator<string> {
         const entries = await limiter(() => FS.readdir(dir, { withFileTypes: true }) );
         for (const entry of entries) {
             const fullPath = Path.join(dir, entry.name);
@@ -54,35 +55,8 @@ export class Find {
             else yield* this.walk(fullPath, limiter);
         }
     }
-    /**
-     * Creates a concurrency limiter for asynchronous operations. The returned function allows you to execute asynchronous tasks while ensuring that no more than a specified number of tasks are running concurrently. If the limit is reached, additional tasks will be queued and executed in order as active tasks complete. This is particularly useful for managing resources and preventing overload when performing operations like file system access or network requests.
-     * @param limit The maximum number of concurrent tasks allowed.
-     * @returns A function that can be used to execute asynchronous tasks with concurrency control.
-     */
-    public static createLimiter(limit: number): Find.CurrencyAction {
-        let active = 0;
-        const queue: (() => void)[] = [];
-
-        const next = () => {
-            active--;
-            if (queue.length) {
-                const nextFn = queue.shift()!;
-                nextFn();
-            }
-        };
-
-        const action: Find.CurrencyAction = async (fn: () => any) => {
-            if (active >= limit) { await new Promise<void>(resolve => queue.push(resolve)); }
-            active++;
-            try { return await fn(); }
-            finally { next(); }
-        };
-
-        return action
-    }
 }
 export namespace Find {
-    export type CurrencyAction = <T>(fn: () => Promise<T>) => Promise<T>;
     export interface Options {
         cwd?: string;
         concurrency?: number;
