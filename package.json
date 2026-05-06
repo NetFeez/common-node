@@ -1,6 +1,6 @@
 {
   "name": "@netfeez/common-node",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "common logic for Node.js environments",
   "type": "module",
   "main": "build/common-node.js",
@@ -9,8 +9,8 @@
     "./*": { "import": "./build/*.js" }
   },
   "scripts": {
-    "compile": "bash scripts/compile.sh",
-    "start": "bash scripts/start.sh"
+    "build": "bash scripts/build.sh",
+    "prepublishOnly": "npm run build"
   },
   "author": {
     "name": "NetFeez",
