@@ -8,7 +8,7 @@ import { promises as FS } from 'fs';
 import Path from '../Path.js';
 import { fileURLToPath } from 'url';
 import { Find } from './Find.js';
-import Async from '../Async.js';
+import Async from '../Async/Async.js';
 import Validation from './Validation.js';
 import Management from './Management.js';
 import { Utils } from './Utils.js';
@@ -145,52 +145,53 @@ export class File {
      * @param baseDir The base directory to search within (default is the current working directory).
      * @returns A promise that resolves to an array of file paths that match the specified pattern.
      */
-    static async find(pattern: string, baseDir: string = Path.cwd): Promise<string[]> {
+    public static async find(pattern: string, baseDir: string = Path.cwd): Promise<string[]> {
         return Find.find(pattern, { cwd: baseDir });
     }
-        /**
-         * Moves files matching a given pattern to a specified destination, with support for options such as filtering, mapping, and concurrency control.
-         * The method uses the processEntries function to handle the file processing logic, allowing for flexible handling of file paths and operations.
-         * It ensures that the directory structure is maintained when moving files based on glob patterns and provides error handling for potential issues during the move operation, such as cross-device moves.
-         * This method is useful for efficiently moving multiple files while applying custom logic to determine which files to move and how to structure the destination paths.
-         * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
-         * @param dest The base destination path where the matched files should be moved to.
-         * @param options Optional settings for processing, including the base directory, filter and map functions, and concurrency level.
-         * @returns A promise that resolves when all move operations are complete.
-         * @throws Will throw an error if there is an issue during the moving of files, such as if the source files do not exist or if there are permission issues.
-         */
-        static async smartMove(pattern: string, dest: string, options: Smart.Options = {}): Promise<void> {
-            return Smart.move(pattern, dest, options);
-        }
-        /**
-         * Copies files matching a given pattern to a specified destination, with support for options such as filtering, mapping, and concurrency control.
-         * The method uses the processEntries function to handle the file processing logic, allowing for flexible handling of file paths and operations.
-         * It ensures that the directory structure is maintained when copying files based on glob patterns and provides error handling for potential issues during the copy operation.
-         * This method is useful for efficiently copying multiple files while applying custom logic to determine which files to copy and how to structure the destination paths.
-         * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
-         * @param dest The base destination path where the matched files should be copied to.
-         * @param options Optional settings for processing, including the base directory, filter and map functions, and concurrency level.
-         * @returns A promise that resolves when all copy operations are complete.
-         * @throws Will throw an error if there is an issue during the copying of files, such as if the source files do not exist or if there are permission issues.
-         */
-        static async smartCopy(pattern: string, dest: string, options: Smart.Options = {}): Promise<void> {
-            return Smart.copy(pattern, dest, options);
-        }
-        /**
-         * Processes file entries based on a given pattern, destination, options, and a handler function.
-         * It first resolves the file paths matching the pattern and then applies the provided handler function to each source and destination pair.
-         * The method supports filtering and mapping of file paths through the options parameter, allowing for flexible processing of files based on user-defined criteria.
-         * This approach is useful for performing various operations on files, such as copying or moving them, while providing a consistent way to handle file paths and apply custom logic before executing the desired action.
-         * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
-         * @param dest The base destination path where the matched files should be processed to.
-         * @param options Optional settings for processing, including the base directory, filter and map functions, and concurrency level.
-         * @param handler A function that takes a source and destination path and performs the desired operation (e.g., copying or moving files).
-         * @returns A promise that resolves when all processing operations are complete.
-         * @throws Will throw an error if there is an issue during the processing of files, such as if the source files do not exist or if there are permission issues.
-         */
-        protected static async processEntries(pattern: string, dest: string, options: Smart.Options, handler: Smart.ProcessHandler): Promise<void> {
-            return Smart.processEntries(pattern, dest, options, handler);
-        }
+    /**
+     * Moves files matching a given pattern to a specified destination, with support for options such as filtering, mapping, and concurrency control.
+     * The method uses the processEntries function to handle the file processing logic, allowing for flexible handling of file paths and operations.
+     * It ensures that the directory structure is maintained when moving files based on glob patterns and provides error handling for potential issues during the move operation, such as cross-device moves.
+     * This method is useful for efficiently moving multiple files while applying custom logic to determine which files to move and how to structure the destination paths.
+     * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
+     * @param dest The base destination path where the matched files should be moved to.
+     * @param options Optional settings for processing, including the base directory, filter and map functions, and concurrency level.
+     * @returns A promise that resolves when all move operations are complete.
+     * @throws Will throw an error if there is an issue during the moving of files, such as if the source files do not exist or if there are permission issues.
+     */
+    public static async smartMove(pattern: string, dest: string, options: Smart.Options = {}): Promise<void> {
+        return Smart.move(pattern, dest, options);
+    }
+    /**
+     * Copies files matching a given pattern to a specified destination, with support for options such as filtering, mapping, and concurrency control.
+     * The method uses the processEntries function to handle the file processing logic, allowing for flexible handling of file paths and operations.
+     * It ensures that the directory structure is maintained when copying files based on glob patterns and provides error handling for potential issues during the copy operation.
+     * This method is useful for efficiently copying multiple files while applying custom logic to determine which files to copy and how to structure the destination paths.
+     * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
+     * @param dest The base destination path where the matched files should be copied to.
+     * @param options Optional settings for processing, including the base directory, filter and map functions, and concurrency level.
+     * @returns A promise that resolves when all copy operations are complete.
+     * @throws Will throw an error if there is an issue during the copying of files, such as if the source files do not exist or if there are permission issues.
+     */
+    public static async smartCopy(pattern: string, dest: string, options: Smart.Options = {}): Promise<void> {
+        return Smart.copy(pattern, dest, options);
+    }
+    /**
+     * Processes files matching a given pattern by applying a specified handler function to each matched file entry, with support for options such as filtering, mapping, and concurrency control.
+     * The method generates file entries based on the provided pattern and options, and then consumes those entries using the handler function, which can perform operations such as moving or copying files.
+     * It ensures that the directory structure is maintained when processing files based on glob patterns and provides error handling for potential issues during file operations.
+     * This method is useful for efficiently processing multiple files while applying custom logic to determine which files to process and how to handle them, making it a flexible solution for various file manipulation tasks.
+     * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
+     * @param dest The base destination path where the matched files should be processed to.
+     * @param options Optional settings for processing, including the base directory, filter and map functions, and concurrency level.
+     * @param handler A function that takes a file entry and performs the desired operation (e.g., moving or copying the file).
+     * @returns A promise that resolves when all file processing operations are complete.
+     * @throws Will throw an error if there is an issue during the processing of files, such as if the source files do not exist or if there are permission issues.
+     */
+    public static async smartProcess(pattern: string, dest: string, options: Smart.Options = {}, handler: Smart.Handler): Promise<void> {
+        const entries = Smart.entries(pattern, dest, options);
+        return Smart.consume(entries, options, handler);
+    }
 }
 
 export namespace File {}
