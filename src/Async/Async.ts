@@ -1,3 +1,5 @@
+import Semaphore from "./Semaphore.js";
+
 export class Async {
     /**
      * Asynchronously delays execution for a specified number of milliseconds. This method returns a promise that resolves after the given time has elapsed, allowing you to pause the execution of asynchronous code without blocking the event loop. It can be used in various scenarios, such as implementing timeouts, creating delays between operations, or simulating asynchronous behavior in testing.
@@ -70,25 +72,18 @@ export class Async {
      * @returns A concurrency limiter function that can be used to wrap asynchronous functions.
      */
     public static currencyLimiter(limit: number): Async.CurrencyAction {
-        let active = 0;
-        const queue: (() => void)[] = [];
-
-        const next = () => {
-            active--;
-            if (queue.length) {
-                const nextFn = queue.shift()!;
-                nextFn();
-            }
+        const semaphore = new Semaphore(limit);
+        return async function<T>(fn: () => Promise<T>): Promise<T> {
+            return semaphore.use(fn);
         };
-
-        const action: Async.CurrencyAction = async (fn: () => any) => {
-            if (active >= limit) { await new Promise<void>(resolve => queue.push(resolve)); }
-            active++;
-            try { return await fn(); }
-            finally { next(); }
-        };
-
-        return action
+    }
+    /**
+     * Creates a new Semaphore instance with the specified concurrency limit. A semaphore is a synchronization primitive that controls access to a shared resource by multiple asynchronous operations. By using a semaphore, you can limit the number of concurrent operations that can access a particular resource, which is useful for managing resources and preventing overload in scenarios such as network requests, file system operations, or any situation where you want to control the level of concurrency.
+     * @param limit The maximum number of concurrent operations that the semaphore will allow.
+     * @returns A new Semaphore instance configured with the specified concurrency limit.
+     */
+    public static semaphore(limit: number): Semaphore {
+        return new Semaphore(limit);
     }
 }
 export namespace Async {
