@@ -2,7 +2,7 @@ import { promises as FS } from 'fs';
 
 import Glob from "../Glob.js";
 import Path from "../Path.js";
-import Async from '../Async.js';
+import Async from '../Async/Async.js';
 
 export class Find {
     /**
