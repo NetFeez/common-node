@@ -1,12 +1,12 @@
 {
   "name": "@netfeez/common-node",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "common logic for Node.js environments",
   "type": "module",
   "main": "build/common-node.js",
   "exports": {
-    ".": { "import": "./build/common-node.js" },
-    "./*": { "import": "./build/*.js" }
+    ".": { "import": "./build/common-node.js", "types": "./build/common-node.d.ts" },
+    "./*": { "import": "./build/*", "types": "./build/*" }
   },
   "scripts": {
     "build": "bash scripts/build.sh",
