@@ -35,10 +35,12 @@ export class Find {
     static async * findStream(pattern: string, options: Find.Options = {}): AsyncGenerator<string> {
         const cwd = options.cwd ?? Path.cwd;
         const regex = Glob.globToRegex(pattern);
+        const absolutePattern = Path.isAbsolute(pattern);
         const limiter = Async.currencyLimiter(options.concurrency ?? 32);
         for await (const fullPath of this.walk(cwd, limiter)) {
             const relative = Path.diff(cwd, fullPath).split(Path.sep).join('/');
-            if (regex.test(relative)) yield options.absolute ? fullPath : relative;
+            const candidate = absolutePattern ? fullPath : relative;
+            if (regex.test(candidate)) yield options.absolute ? fullPath : relative;
         }
     }
     /**
