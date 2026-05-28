@@ -33,14 +33,14 @@ export class Find {
      * @returns An asynchronous generator that yields file paths matching the glob pattern based on the provided options.
      */
     static async * findStream(pattern: string, options: Find.Options = {}): AsyncGenerator<string> {
-        const cwd = options.cwd ?? Path.cwd;
         const regex = Glob.globToRegex(pattern);
+        const { cwd = Path.cwd, absolute = true, concurrency = 32 } = options;
         const absolutePattern = Path.isAbsolute(pattern);
-        const limiter = Async.currencyLimiter(options.concurrency ?? 32);
+        const limiter = Async.currencyLimiter(concurrency);
         for await (const fullPath of this.walk(cwd, limiter)) {
             const relative = Path.diff(cwd, fullPath).split(Path.sep).join('/');
             const candidate = absolutePattern ? fullPath : relative;
-            if (regex.test(candidate)) yield options.absolute ? fullPath : relative;
+            if (regex.test(candidate)) yield absolute ? fullPath : relative;
         }
     }
     /**
@@ -50,6 +50,7 @@ export class Find {
      * @returns An asynchronous generator that yields the full paths of all files found in the directory and its subdirectories.
      */
     public static async * walk(dir: string, limiter = Async.currencyLimiter(32)): AsyncGenerator<string> {
+        dir = Path.isAbsolute(dir) ? dir : Path.root(dir);
         const entries = await limiter(() => FS.readdir(dir, { withFileTypes: true }) );
         for (const entry of entries) {
             const fullPath = Path.join(dir, entry.name);
