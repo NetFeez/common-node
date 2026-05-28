@@ -140,6 +140,8 @@ export class File {
         return Utils.findModuleRoot(you);
     }
     /**
+     *  @deprecated Use the glob method instead, which provides more flexible file searching capabilities with support for glob patterns and additional options.
+     * 
      * Finds files matching a specified glob pattern within a base directory. The pattern can include wildcards such as '*' for matching any sequence of characters (except path separators) and '**' for matching any sequence of characters across directories. The method constructs a regular expression from the provided pattern and uses it to filter the list of files retrieved from the base directory and its subdirectories. It returns an array of file paths that match the pattern, allowing for flexible file searching based on naming conventions or directory structures.
      * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
      * @param baseDir The base directory to search within (default is the current working directory).
@@ -147,6 +149,17 @@ export class File {
      */
     public static async find(pattern: string, baseDir: string = Path.cwd): Promise<string[]> {
         return Find.find(pattern, { cwd: baseDir });
+    }
+    /**
+     * Finds files matching a specified glob pattern within a base directory, with support for additional options such as filtering, mapping, and concurrency control.
+     * The method constructs a regular expression from the provided pattern and uses it to filter the list of files retrieved from the base directory and its subdirectories.
+     * It allows for flexible file searching based on naming conventions or directory structures, while also providing the ability to apply custom logic to determine which files to include in the results and how to structure the returned file paths.
+     * @param pattern The pattern to match file paths against, which can include wildcards like '*' and '**'.
+     * @param options Optional settings for finding files, including the base directory (cwd), filter and map functions, and concurrency level.
+     * @returns A promise that resolves to an array of file paths that match the specified pattern and meet the criteria defined by the options.
+     */
+    public static async glob(pattern: string, options: Find.Options = {}): Promise<string[]> {
+        return Find.find(pattern, options);
     }
     /**
      * Moves files matching a given pattern to a specified destination, with support for options such as filtering, mapping, and concurrency control.
