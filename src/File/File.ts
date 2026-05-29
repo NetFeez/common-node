@@ -16,13 +16,21 @@ import { Smart } from './Smart.js';
 
 export class File {
     /**
+     * Retrieves the file system statistics for the specified path.
+     * @param path The file system path to get statistics for.
+     * @returns A promise that resolves to the file system statistics.
+     */
+    public static async stat(path: string): Promise<import('fs').Stats> {
+        return FS.stat(path);
+    }
+    /**
      * Checks if a given path exists in the file system.
      * It uses fs.access to determine if the path is accessible, returning true if it exists and false if it does not.
      * This method is useful for verifying the presence of files or directories before attempting to read, write, or perform other operations on them, helping to prevent errors related to non-existent paths.
      * @param path The file system path to check for existence.
      * @returns A promise that resolves to true if the path exists, or false if it does not.
      */
-    static async exists(path: string): Promise<boolean> {
+    public static async exists(path: string): Promise<boolean> {
         return Validation.exists(path);
     }
     /**
@@ -35,7 +43,7 @@ export class File {
      * @returns A promise that resolves to true if the path is a file, or false if it is not.
      * @throws Will throw an error if the path does not exist or is not a file.
      */
-    static async isFile(path: string): Promise<boolean> {
+    public static async isFile(path: string): Promise<boolean> {
         return Validation.isFile(path);
     }
     /**
@@ -48,7 +56,7 @@ export class File {
      * @returns A promise that resolves to true if the path is a directory, or false if it is not.
      * @throws Will throw an error if the path does not exist or is not a directory.
      */
-    static async isDirectory(path: string): Promise<boolean> {
+    public static async isDirectory(path: string): Promise<boolean> {
         return Validation.isDirectory(path);
     }
     /**
@@ -61,7 +69,7 @@ export class File {
      * @returns A promise that resolves to the content of the file as a string.
      * @throws Will throw an error if the path does not point to a valid file.
      */
-    static async read(path: string, encoding: BufferEncoding = 'utf-8'): Promise<string> {
+    public static async read(path: string, encoding: BufferEncoding = 'utf-8'): Promise<string> {
         return Management.read(path, encoding);
     }
     /**
@@ -74,7 +82,7 @@ export class File {
      * @param encoding The character encoding to use when writing the file (default is 'utf-8').
      * @returns A promise that resolves when the write operation is complete.
      */
-    static async write(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
+    public static async write(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
         return Management.write(path, content, encoding);
     }
     /**
@@ -93,7 +101,7 @@ export class File {
      * @returns A promise that resolves when the directory has been successfully created.
      * @throws Will throw an error if the path already exists or if there is an issue during directory creation.
      */
-    static async mkdir(path: string, options?: { recursive?: boolean }): Promise<void> {
+    public static async mkdir(path: string, options?: { recursive?: boolean }): Promise<void> {
         return Management.mkdir(path, options);
     }
     /**
@@ -106,7 +114,7 @@ export class File {
      * @returns A promise that resolves when the copy operation is complete.
      * @throws Will throw an error if there is an issue during the copy process, such as if the source does not exist or if there are permission issues.
      */
-    static async copy(src: string, dest: string): Promise<void> {
+    public static async copy(src: string, dest: string): Promise<void> {
         return Management.copy(src, dest);
     }
     /**
@@ -119,7 +127,7 @@ export class File {
      * @returns A promise that resolves when the move operation is complete.
      * @throws Will throw an error if there is an issue during the move process, such as if the source does not exist or if there are permission issues.
      */
-    static async move(src: string, dest: string): Promise<void> {
+    public static async move(src: string, dest: string): Promise<void> {
         return Management.move(src, dest);
     }
     /**
@@ -128,7 +136,7 @@ export class File {
      * @returns A promise that resolves when the removal operation is complete.
      * @throws Will throw an error if there is an issue during the removal process, such as permission issues or if the path is a non-empty directory and recursive deletion is not allowed.
      */
-    static async remove(path: string): Promise<void> {
+    public static async remove(path: string): Promise<void> {
         return Management.remove(path);
     }
     /**
