@@ -5,8 +5,14 @@
   "type": "module",
   "main": "build/common-node.js",
   "exports": {
-    ".": { "import": "./build/common-node.js", "types": "./build/common-node.d.ts" },
-    "./*": { "import": "./build/*", "types": "./build/*" }
+    ".": {
+      "import": "./build/common-node.js",
+      "types": "./build/common-node.d.ts"
+    },
+    "./*": {
+      "import": "./build/*",
+      "types": "./build/*"
+    }
   },
   "scripts": {
     "build": "bash scripts/build.sh",
@@ -31,6 +37,6 @@
   "keywords": [],
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "typescript": "^6.0.2"
+    "typescript": "^7.0.2"
   }
 }

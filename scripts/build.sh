@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if npx tsc -pretty > .compile.log 2>&1 && npx dep fix-paths >> .compile.log 2>&1; then
+if npx tsc -pretty > .compile.log 2>&1; then
   echo -e "\x1B[32mServer compilation successful.\x1B[0m"
 else
   echo -e "\x1B[31mServer compilation failed.\x1B[0m"
