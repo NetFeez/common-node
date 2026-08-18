@@ -1,4 +1,4 @@
-import { promises as FS } from 'node:fs';
+import { promises as FS, Mode, ObjectEncodingOptions, OpenMode } from 'node:fs';
 
 import Path from "../Path.js";
 import Validation from './Validation.js';
@@ -23,7 +23,7 @@ export class Management {
      * @returns A promise that resolves to the content of the file as a string.
      * @throws Will throw an error if the path does not point to a valid file.
      */
-    static async read(path: string, encoding: BufferEncoding = 'utf-8'): Promise<string> {
+    public static async read(path: string, encoding: BufferEncoding = 'utf-8'): Promise<string> {
         try { return await FS.readFile(path, encoding); }
         catch (err: any) {
             if (err.code === 'ENOENT') { throw new Error(`File not found: ${path}`); }
@@ -37,12 +37,12 @@ export class Management {
      * It can be used for a variety of purposes, such as saving configuration files, logs, or any other data that needs to be persisted in the file system.
      * @param path The file system path where the content should be written.
      * @param content The string content to write to the file.
-     * @param encoding The character encoding to use when writing the file (default is 'utf-8').
+     * @param options The character encoding to use when writing the file (default is 'utf-8').
      * @returns A promise that resolves when the write operation is complete.
      */
-    static async write(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
+    public static async write(path: string, content: string | Buffer | Uint8Array, options: Management.WriteOptions | BufferEncoding = 'utf-8'): Promise<void> {
         await this.ensureDir(Path.dirname(path));
-        await FS.writeFile(path, content);
+        await FS.writeFile(path, content, options);
     }
     /**
      * Creates a directory at the specified path with the given options (such as recursive creation). It first checks if the path already exists using the exists method, and if it does, it throws an error to prevent overwriting existing files or directories. If the path does not exist, it uses fs.mkdir to create the directory according to the provided options. This method is essential for safely creating directories while ensuring that existing paths are not unintentionally overwritten, and it can be used to set up necessary directory structures for applications or projects.
@@ -51,7 +51,7 @@ export class Management {
      * @returns A promise that resolves when the directory has been successfully created.
      * @throws Will throw an error if the path already exists or if there is an issue during directory creation.
      */
-    static async mkdir(path: string, options?: { recursive?: boolean }): Promise<void> {
+    public static async mkdir(path: string, options?: { recursive?: boolean }): Promise<void> {
         if (await Validation.exists(path)) throw new Error(`Path ${path} already exists.`);
         await FS.mkdir(path, options);
     }
@@ -65,7 +65,7 @@ export class Management {
      * @returns A promise that resolves when the copy operation is complete.
      * @throws Will throw an error if there is an issue during the copy process, such as if the source does not exist or if there are permission issues.
      */
-    static async copy(src: string, dest: string): Promise<void> {
+    public static async copy(src: string, dest: string): Promise<void> {
         const destDir = Path.dirname(dest);
         if (!await Validation.exists(destDir)) await FS.mkdir(destDir, { recursive: true });
         await FS.cp(src, dest, { recursive: true });
@@ -80,7 +80,7 @@ export class Management {
      * @returns A promise that resolves when the move operation is complete.
      * @throws Will throw an error if there is an issue during the move process, such as if the source does not exist or if there are permission issues.
      */
-    static async move(src: string, dest: string): Promise<void> {
+    public static async move(src: string, dest: string): Promise<void> {
         this.ensureDir(Path.dirname(dest));
         try { await FS.rename(src, dest); }
         catch (err: any) {
@@ -96,9 +96,15 @@ export class Management {
      * @returns A promise that resolves when the removal operation is complete.
      * @throws Will throw an error if there is an issue during the removal process, such as permission issues or if the path is a non-empty directory and recursive deletion is not allowed.
      */
-    static async remove(path: string): Promise<void> {
+    public static async remove(path: string): Promise<void> {
         await FS.rm(path, { recursive: true, force: true });
     }
 }
-export namespace Management {}
+export namespace Management {
+    export interface WriteOptions extends ObjectEncodingOptions {
+        mode?: Mode;
+        flag?: OpenMode;
+        flush?: boolean;
+    }
+}
 export default Management;

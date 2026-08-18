@@ -79,11 +79,11 @@ export class File {
      * It can be used for a variety of purposes, such as saving configuration files, logs, or any other data that needs to be persisted in the file system.
      * @param path The file system path where the content should be written.
      * @param content The string content to write to the file.
-     * @param encoding The character encoding to use when writing the file (default is 'utf-8').
+     * @param options The character encoding to use when writing the file (default is 'utf-8').
      * @returns A promise that resolves when the write operation is complete.
      */
-    public static async write(path: string, content: string, encoding: BufferEncoding = 'utf-8'): Promise<void> {
-        return Management.write(path, content, encoding);
+    public static async write(path: string, content: string | Buffer | Uint8Array, options: Management.WriteOptions | BufferEncoding = 'utf-8'): Promise<void> {
+        return Management.write(path, content, options);
     }
     /**
      * Ensures that a directory exists at the specified path. If the directory does not exist, it creates it using fs.mkdir with the option { recursive: true } to create any necessary parent directories. This method is useful for preparing the file system for operations that require a specific directory structure, preventing errors related to missing directories when attempting to read, write, or move files.
